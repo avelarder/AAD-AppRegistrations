@@ -1,0 +1,43 @@
+﻿using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace SampleClientApp.Helper
+{
+    public class AuthConfig
+    {
+        public string Instance { get; set; } =
+          "https://login.microsoftonline.com/{0}";
+        public string TenantId { get; set; }
+        public string ClientId { get; set; }
+        public string Authority
+        {
+            get
+            {
+                return String.Format(CultureInfo.InvariantCulture,
+                                     Instance, TenantId);
+            }
+        }
+        public string ClientSecret { get; set; }
+        public string BaseAddress { get; set; }
+        public string ResourceID { get; set; }
+
+        public static AuthConfig ReadFromJsonFile(string path)
+        {
+            IConfiguration Configuration;
+
+            var builder = new ConfigurationBuilder()
+              .SetBasePath(Directory.GetCurrentDirectory())
+              .AddJsonFile(path);
+
+            Configuration = builder.Build();
+
+            var section = Configuration.GetSection("ServiceAd");
+            return section.Get<AuthConfig>();
+        }
+    }
+}
